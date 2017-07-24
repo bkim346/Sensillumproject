@@ -14,11 +14,12 @@ for ind = 1:length(pfs)
     spikes_out = pouzatclass1(spikes,opts_1);
     spikes_out1 = removeoutliers_aut(spikes_out,23,[],'euclidean');
     spikes_out2 = removeoutliers_aut(spikes_out1,.99,[],'mahalanobis');
-    [fpos fneg] = toterr_rt(spikes_out2);
+    [fpos fneg] = toterr_rt(spikes_out2)
+    if any([fpos(clustndx) fneg(clustndx)]>5), break, end
     sortdata2spikes(spikes_out2,opts_1.prefix, clustndx,2,1,3,[]);
-    save(strcat(opts_1.prefix,'_class'), spikes_out2)
-    save(strcat(opts_1.prefix,'_class', '_err'), fpos, fneg, clustndx)
+    save(strcat(opts_1.prefix,'_class'), 'spikes_out2')
+    save(strcat(opts_1.prefix,'_class', '_err'), 'fpos', 'fneg', 'clustndx')
     
-    clearvars -EXCEPT opts_1 spikes 
+    clearvars -EXCEPT opts_1 spikes pfs clustndx
 end
     
