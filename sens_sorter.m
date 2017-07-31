@@ -1,11 +1,13 @@
-function sens_sorter(pfs, spikes, clustndx, bdndx)
+function sens_sorter(pfs, spikes, clustndx,ntrials, bdndx)
 
 %pfs - [{odorant} {odorant} ... {odorantmuilti}]
 %spikes - template
 %clustndx - interested clusters in the template
 
-opts_1.bdndx = [];
-opts_1.ntrials = 5;
+if nargin<5||isempty(bdndx), bdndx=[]; end
+if nargin<4||isempty(ntrials),ntrials=5; end
+opts_1.ntrials = ntrials;
+opts_1.bdndx = bdndx;
 opts_1.xval = 'auto';
 
 for ind = 1:length(pfs)

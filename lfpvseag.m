@@ -122,5 +122,10 @@ for ind=1:(nlocs)
     plot(tv(reshape(xx3,2,length(xx3)/2)')', ones(2,1)*min(yl(:,1)), 'k', 'LineWidth', 8)
     datats = 0;
 end
-
 axis tight
+
+%EAG segment vs EAG Peak
+figure();
+hold all
+plot(legendtot,texty,'b*')
+plot([0 0],[min(texty) max(texty)],'--','Color',[0.7 0.7 0.7])
