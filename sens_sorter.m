@@ -19,7 +19,15 @@ for ind = 1:length(pfs)
     save(strcat(opts_1.prefix,'_class'), 'spikes_out2', 'spikes_out', 'spikes_out1')
     if length(clustndx)> 1
         [fpos, fneg] = toterr_rt(spikes_out2)
-        if any(fpos(clustndx)>5) | any(fneg(clustndx)>5), break, end
+        if any(fpos(clustndx)>5) | any(fneg(clustndx)>5)
+            clusterorbitplot2(spikes_out2,1)
+            fldplot_tot(spikes_out2)
+            plot_clustmodwaves(spikes_out2)
+                choice = menu('Press yes no','Yes','No');
+                if choice==2 | choice==0
+                    break;
+                end         
+        end
         save(strcat(opts_1.prefix,'_class', '_err'), 'fpos', 'fneg', 'clustndx')
     end
     sortdata2spikes(spikes_out2,opts_1.prefix, clustndx,2,4,3,[]);

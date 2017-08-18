@@ -31,13 +31,20 @@ rows =ceil((nlocs)/3);
 yl=zeros(nlocs,2);
 legendtot = zeros(1,nlocs);
 textx = zeros(1,nlocs);
-texty = zeros(1,nlocs);
+textyeag = zeros(1,nlocs);
+textylfp = zeros(1,nlocs);
+covarpeaktot = zeros(1,nlocs);
+covarlagtot = zeros(1,nlocs);
+
+
 LFP = 1;
 EAG = 2;
 EAGvLFP = 3;
+covarplot = 4;
 figure(LFP)
 figure(EAG)
 figure(EAGvLFP)
+figure(covarplot)
 for ind=1:nlocs
     prefixnum = [prefix num2str(ind)];
     datae=-parseOneChannel('.',prefixnum,ntrials,bdndx,eagchan)*10000/pow2(16)/500;
@@ -78,9 +85,21 @@ for ind=1:nlocs
     else
         textx(ind) = find(datate == max(datate));
     end
-    texty(ind) = max(datate);
+    textyeag(ind) = max(datate);
+    textylfp(ind) = max(datatl);
+    
+    figure(covarplot)
+    subplot(rows,3,ind)
+    hold all
+    covar =xcov(datate(2e4:6e4),datatl(2e4:6e4),8000,'biased') ;
+    covarpeaktot(ind) = max(covar);
+    covtime=(-8000:8000)/10;
+    plot(covtime,covar)
+    covarlagtot(ind) = covtime(find((covar == max(covar))));
+    %     covarlagtot(ind) = find((covar == max(covar)))/10;
     datatl = 0;
     datate = 0;
+    
 end
 
 figure(LFP)
@@ -92,7 +111,7 @@ xlabel('Time(s)')
 figure(EAG)
 legend(num2str(legendtot'))
 title('All EAGs')
-text(textx/fs,texty+.1,num2str(legendtot'),'FontSize',14,'FontWeight','bold')
+text(textx/fs,textyeag+.1,num2str(legendtot'),'FontSize',14,'FontWeight','bold')
 ylabel('Response(mV)')
 xlabel('Time(s)')
 
@@ -127,5 +146,29 @@ axis tight
 %EAG segment vs EAG Peak
 figure();
 hold all
-plot(legendtot,texty,'b*')
-plot([0 0],[min(texty) max(texty)],'--','Color',[0.7 0.7 0.7])
+plot(legendtot,textyeag,'b*')
+plot([0 0],[min(textyeag) max(textyeag)],'--','Color',[0.7 0.7 0.7])
+ylabel('Peak Amplitude(mV)')
+xlabel('Segments away from LFP electrode')
+
+%LFP peak vs EAG Peak
+figure();
+hold all
+plot(textyeag,textylfp,'.','markersize',15)
+ylabel('LFP Peak Amplitude(mV)')
+xlabel('EAG Peak Amplitude(mV)')
+
+%EAG LFP covar peak
+figure();
+hold all
+plot(legendtot,covarpeaktot,'.','markersize',15)
+ylabel('Covariance Peak')
+xlabel('Segments away from LFP electrode')
+
+%EAG LFP peak lagtime
+figure();
+hold all
+plot(legendtot,covarlagtot,'.','markersize',15)
+ylabel('Covariance Peak Time (ms)')
+xlabel('Segments away from LFP electrode')
+axis tight
